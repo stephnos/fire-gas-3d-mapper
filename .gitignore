@@ -1,0 +1,17 @@
+# Python virtual environments
+.venv/
+venv/
+server/.venv/
+
+# Python cache/artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Frontend build artifacts
+client/dist/
+
+# OS/editor noise
+.DS_Store
