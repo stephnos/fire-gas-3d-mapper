@@ -26,7 +26,7 @@ function DetectorNode({ detector }) {
 
   return (
     <group position={[detector.x, detector.y + 0.25, detector.z]}>
-      <mesh ref={markerRef} castShadow>
+      <mesh ref={markerRef} castShadow raycast={() => null}>
         <sphereGeometry args={[0.25, 24, 24]} />
         <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.15} />
       </mesh>
@@ -44,7 +44,7 @@ function CoverageZone({ detector }) {
   const color = detector.type === 'fire' ? '#ef4444' : '#38bdf8'
 
   return (
-    <mesh position={[detector.x, detector.y + 0.15, detector.z]}>
+    <mesh position={[detector.x, detector.y + 0.15, detector.z]} raycast={() => null}>
       <sphereGeometry args={[radius, 28, 28]} />
       <meshStandardMaterial color={color} transparent opacity={0.2} depthWrite={false} />
     </mesh>
@@ -60,7 +60,7 @@ function HazardNode({ hazard }) {
   const color = hazard.type === 'fire' ? '#f97316' : '#67e8f9'
 
   return (
-    <mesh position={[hazard.x, hazard.y + 0.2, hazard.z]}>
+    <mesh position={[hazard.x, hazard.y + 0.2, hazard.z]} raycast={() => null}>
       <sphereGeometry args={[0.18, 12, 12]} />
       <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.35} />
     </mesh>
@@ -74,10 +74,11 @@ function HazardNode({ hazard }) {
  */
 function Environment({ onSurfaceClick }) {
   /**
-   * Handles pointer intersections on placeable meshes.
-   * @param {import('@react-three/fiber').ThreeEvent<PointerEvent>} event
+   * Handles click intersections on placeable meshes.
+   * Uses click (not pointer down) so orbit drags do not place detectors.
+   * @param {import('@react-three/fiber').ThreeEvent<MouseEvent>} event
    */
-  const handlePointerDown = (event) => {
+  const handleClick = (event) => {
     event.stopPropagation()
     const { x, y, z } = event.point
     onSurfaceClick({ x, y, z })
@@ -85,24 +86,31 @@ function Environment({ onSurfaceClick }) {
 
   return (
     <>
-      <Grid args={[48, 48]} cellSize={1} sectionSize={4} fadeDistance={48} fadeStrength={1.4} />
+      <Grid
+        args={[48, 48]}
+        cellSize={1}
+        sectionSize={4}
+        fadeDistance={48}
+        fadeStrength={1.4}
+        raycast={() => null}
+      />
 
       <mesh
         receiveShadow
         rotation={[-Math.PI / 2, 0, 0]}
-        onPointerDown={handlePointerDown}
+        onClick={handleClick}
         position={[0, 0, 0]}
       >
         <planeGeometry args={[40, 40]} />
         <meshStandardMaterial color="#111827" roughness={0.95} metalness={0.12} />
       </mesh>
 
-      <mesh castShadow receiveShadow position={[4, 1.25, -6]} onPointerDown={handlePointerDown}>
+      <mesh castShadow receiveShadow position={[4, 1.25, -6]} onClick={handleClick}>
         <boxGeometry args={[4, 2.5, 4]} />
         <meshStandardMaterial color="#334155" />
       </mesh>
 
-      <mesh castShadow receiveShadow position={[-7, 0.9, 4]} onPointerDown={handlePointerDown}>
+      <mesh castShadow receiveShadow position={[-7, 0.9, 4]} onClick={handleClick}>
         <boxGeometry args={[3, 1.8, 6]} />
         <meshStandardMaterial color="#3f3f46" />
       </mesh>
@@ -124,7 +132,7 @@ export default function Scene({ detectors, hazards, showCoverage, onSurfaceClick
   const cameraPosition = useMemo(() => [16, 14, 16], [])
 
   return (
-    <Canvas shadows camera={{ position: cameraPosition, fov: 50 }}>
+    <Canvas className="h-full w-full" shadows camera={{ position: cameraPosition, fov: 50 }}>
       <color attach="background" args={['#020617']} />
 
       <ambientLight intensity={0.45} />
@@ -148,7 +156,7 @@ export default function Scene({ detectors, hazards, showCoverage, onSurfaceClick
         <HazardNode key={hazard.id} hazard={hazard} />
       ))}
 
-      <OrbitControls makeDefault />
+      <OrbitControls makeDefault enableDamping />
     </Canvas>
   )
 }
