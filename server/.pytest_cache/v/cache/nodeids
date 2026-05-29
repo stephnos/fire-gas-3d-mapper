@@ -1,5 +1,0 @@
-[
-  "tests/test_main.py::test_health_endpoint_returns_ok",
-  "tests/test_main.py::test_next_hazard_stays_within_expected_bounds",
-  "tests/test_main.py::test_simulation_websocket_emits_hazard_payload"
-]
