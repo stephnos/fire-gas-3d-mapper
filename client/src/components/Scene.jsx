@@ -1,11 +1,7 @@
 import { useMemo, useRef } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Grid, OrbitControls } from '@react-three/drei'
-
-const COVERAGE_BY_TYPE = {
-  fire: 6,
-  gas: 8,
-}
+import { COVERAGE_BY_TYPE } from '../utils/coverageStats'
 
 /**
  * Renders an animated detector marker with alarm indication.
@@ -92,6 +88,8 @@ function Environment({ onSurfaceClick }) {
         sectionSize={4}
         fadeDistance={48}
         fadeStrength={1.4}
+        position={[0, 0.01, 0]}
+        renderOrder={1}
         raycast={() => null}
       />
 
@@ -102,7 +100,14 @@ function Environment({ onSurfaceClick }) {
         position={[0, 0, 0]}
       >
         <planeGeometry args={[40, 40]} />
-        <meshStandardMaterial color="#111827" roughness={0.95} metalness={0.12} />
+        <meshStandardMaterial
+          color="#111827"
+          roughness={0.95}
+          metalness={0.12}
+          polygonOffset
+          polygonOffsetFactor={1}
+          polygonOffsetUnits={1}
+        />
       </mesh>
 
       <mesh castShadow receiveShadow position={[4, 1.25, -6]} onClick={handleClick}>
@@ -142,6 +147,8 @@ export default function Scene({ detectors, hazards, showCoverage, onSurfaceClick
         castShadow
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
+        shadow-bias={-0.0002}
+        shadow-normalBias={0.02}
       />
 
       <Environment onSurfaceClick={onSurfaceClick} />

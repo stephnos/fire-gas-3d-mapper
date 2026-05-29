@@ -2,11 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AlertTriangle, Flame, Gauge, Play, ShieldAlert, Square } from 'lucide-react'
 import Scene from './components/Scene'
 import { createSimulationSocket } from './services/simulationSocket'
-
-const COVERAGE_BY_TYPE = {
-  fire: 6,
-  gas: 8,
-}
+import { COVERAGE_BY_TYPE, computeFloorCoverageSummary } from './utils/coverageStats'
 
 /**
  * Main dashboard that orchestrates controls, 3D rendering, and simulation.
@@ -51,6 +47,11 @@ function App() {
       { total: 0, fire: 0, gas: 0, alarmed: 0 },
     )
   }, [detectors])
+
+  const coverageSummary = useMemo(
+    () => computeFloorCoverageSummary(detectors),
+    [detectors],
+  )
 
   /**
    * Adds a detector at a clicked scene position based on the selected tool.
@@ -244,8 +245,28 @@ function App() {
                 <p className="text-base font-semibold text-amber-300">{detectorCounts.alarmed}</p>
               </li>
             </ul>
-            <div className="mt-2 rounded-lg border border-slate-700/70 bg-slate-800/70 px-3 py-2 text-xs text-slate-300">
-              Active hazards in scene: <span className="font-semibold text-slate-100">{hazards.length}</span>
+            <div className="mt-2 space-y-2">
+              <div className="rounded-lg border border-cyan-500/25 bg-cyan-500/10 px-3 py-2">
+                <p className="text-[10px] uppercase tracking-widest text-cyan-300/80">Floor coverage</p>
+                <p className="text-lg font-semibold text-cyan-100">{coverageSummary.floorPercent}%</p>
+                <p className="mt-0.5 text-[11px] text-cyan-200/70">
+                  Fire {coverageSummary.firePercent}% · Gas {coverageSummary.gasPercent}%
+                </p>
+              </div>
+              <div className="rounded-lg border border-slate-700/70 bg-slate-800/70 px-3 py-2 text-xs text-slate-300">
+                Blind spots:{' '}
+                <span className="font-semibold text-slate-100">
+                  {coverageSummary.blindSpots.toLocaleString()}
+                </span>
+                <span className="text-slate-500">
+                  {' '}
+                  / {coverageSummary.totalSamples.toLocaleString()} floor samples
+                </span>
+              </div>
+              <div className="rounded-lg border border-slate-700/70 bg-slate-800/70 px-3 py-2 text-xs text-slate-300">
+                Active hazards in scene:{' '}
+                <span className="font-semibold text-slate-100">{hazards.length}</span>
+              </div>
             </div>
           </section>
 

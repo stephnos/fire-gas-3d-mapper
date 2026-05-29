@@ -87,3 +87,36 @@ This runs:
 - WebSocket payload schema:
   - Envelope: `{ "kind": "hazard", "data": HazardPoint }`
   - `HazardPoint`: `{ id, type, x, y, z, timestamp }`
+
+## Future Implementations
+
+This prototype simplifies industrial fire-and-gas mapping. The roadmap below is informed by professional mapping workflows such as those described by [Micropack](https://www.micropacksafety.com) (HazMap3D, performance-based F&G design, and hazard detection studies).
+
+### Mapping & coverage modelling
+
+- **Detector field of view** — Replace spherical coverage with cone/frustum volumes aligned to detector orientation (closer to visual and IR flame detector behaviour).
+- **Obstruction & line-of-sight** — Block coverage behind equipment, walls, and structures; highlight shadow zones on the floor plan.
+- **Blind-spot heatmaps** — Visual overlay for uncovered regions (building on the current floor coverage and blind-spot stats).
+- **Performance-based layout** — Suggest minimum detector count/placement to reach a target coverage % while reducing CAPEX/OPEX.
+- **Import plant geometry** — Load CAD or simplified 3D layouts instead of placeholder boxes.
+
+### Hazard simulation & analysis
+
+- **Gas dispersion & consequence modelling** — Time-evolving hazard clouds rather than random point hazards ([gas dispersion analysis](https://www.micropacksafety.com)).
+- **Computational fluid dynamics (CFD)** — Import or integrate CFD results for realistic leak and fire scenarios in complex layouts.
+- **Toxic gas & acoustic detection** — Additional detector types, coverage rules, and alarm logic.
+- **Fire hazard analysis** — Scenario definitions (ignition sources, fuel types, escalation paths) tied to detector response.
+
+### Standards & engineering review
+
+- **BS 60080:2020 hazard detection review** — Configurable rules and reporting aligned with UK guidance.
+- **ISA TR 84.00.07** — Performance-based fire and gas detection study outputs and traceability.
+- **Beacon & sounder coverage** — Extend mapping beyond detectors to audible/visual alarm reach.
+- **Aspirating smoke detection (ASD)** — Pipe network and sampling-point coverage in 3D.
+
+### Product & operations
+
+- **Persist layouts** — Save/load detector deployments and study metadata via the backend.
+- **Study reports** — Export PDF/CSV summaries (coverage %, blind spots, detector inventory, simulation results).
+- **Detector catalogue** — Model real devices (e.g. range, FOV, response time, false-alarm immunity) instead of fixed radii.
+- **Connection health & audit log** — WebSocket status, simulation session history, and alarm event export for post-incident review.
